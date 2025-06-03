@@ -11,5 +11,6 @@ public:
     void Draw();
     void Update();
     void HandleInput();
+    void KillLaser();
 };
 

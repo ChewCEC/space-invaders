@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include "Classes/game.hpp"
+#include "Classes/spaceship.hpp"
 
 int main() 
 {
@@ -11,13 +12,14 @@ int main()
     SetTargetFPS(144); //framerate
 
     Game game;
-
     while(WindowShouldClose() == false){
         
         game.HandleInput();
+
         BeginDrawing();
         ClearBackground(grey);
         game.Draw(); 
+        game.Update();
 
         EndDrawing();
         
