@@ -10,7 +10,6 @@ int main()
     
     InitWindow(windowWidth, windowHeight, "Space Invaders");
     SetTargetFPS(144); //framerate
-
     Game game;
     while(WindowShouldClose() == false){
         
@@ -20,7 +19,6 @@ int main()
         ClearBackground(grey);
         game.Draw(); 
         game.Update();
-
         EndDrawing();
         
     }
