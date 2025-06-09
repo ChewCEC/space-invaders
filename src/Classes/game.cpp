@@ -16,7 +16,7 @@ void Game::Update(){
 
 void Game::Draw(){
     spaceship.Draw();
-
+    
     for(auto& laser : spaceship.lasers) {
         laser.Draw();
     }
