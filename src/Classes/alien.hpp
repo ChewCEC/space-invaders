@@ -14,7 +14,7 @@ public:
     int type;
     std::vector<Laser> lasers;
 private:
-
+    Color color;
     Texture2D image;
     float speed;
     bool active;

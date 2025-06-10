@@ -12,7 +12,6 @@ int main()
     InitWindow(windowWidth, windowHeight, "Space Invaders");
     SetTargetFPS(144); //framerate
     Game game;
-    Alien alien({100, 100}, 2);
 
     while(WindowShouldClose() == false){
         
@@ -21,7 +20,6 @@ int main()
         ClearBackground(grey);
        
         game.Draw(); 
-        alien.Draw();
         game.Update();
         
         EndDrawing();
