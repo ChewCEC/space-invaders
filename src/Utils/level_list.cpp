@@ -45,7 +45,19 @@ const std::vector<std::vector<int>> level5Grid =
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
+const std::vector<std::vector<int>> level0Grid = 
+{
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+    { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+};
+
+
+
 const std::vector<const std::vector<std::vector<int>>*> LEVELS = {
+    &level0Grid,
     &level1Grid,
     &level2Grid,
     &level3Grid,

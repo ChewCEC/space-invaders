@@ -13,7 +13,12 @@ private:
     std::vector<Obstacle> CreateObstacles();
     std::vector<Alien> aliens;
     std::vector<Alien> CreateAliens(int level);
+
     int currentLevel = 0;
+    void MoveAliens();
+    int alienDirection; 
+    void MoveDownAliens(int distance);
+
 public:
     Game(/* args */);
     ~Game();
@@ -22,5 +27,6 @@ public:
     void HandleInput();
     void KillLaser();
     void NextLevel();
+    void AlienShootLaser();
 };
 

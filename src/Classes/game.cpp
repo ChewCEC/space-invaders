@@ -6,9 +6,12 @@ Game::Game()
 {
     obstacles = CreateObstacles();
     aliens = CreateAliens(currentLevel);
+    alienDirection = 1; 
 }
 
-Game::~Game() {}
+Game::~Game() {
+    Alien::UnloadImages(); // Unload alien images when the game is destroyed
+}
 
 void Game::Update()
 {
@@ -16,7 +19,21 @@ void Game::Update()
     {
         laser.Update();
     }
+
+    for (auto &alien : aliens)
+    {
+        if (alien.lasers.size() > 0)
+        {
+            for (auto &laserAlien : alien.lasers)
+            {
+                laserAlien.Update();
+            }
+        }
+    }
+
+
     KillLaser();
+    MoveAliens();
 }
 
 void Game::Draw()
@@ -38,6 +55,12 @@ void Game::Draw()
         alien.Draw();
     }
 
+    for (auto &laserAliens : aliens)
+    {
+        laserAliens.Draw();
+
+    }
+
     // Draw debug lines with specified offsets
 
     // Horizontal line with Y offset of 55
@@ -50,7 +73,6 @@ void Game::Draw()
     // Optional: Add labels for clarity
     DrawText("Y=55", 10, 55 - 20, 20, RED);
     DrawText("X=110", 110 + 5, 10, 20, RED);
-    DrawText("X=", 220 + 5, 10, 20, RED);
 }
 
 void Game::HandleInput()
@@ -90,6 +112,21 @@ void Game::KillLaser()
             ++it; // Move to the next laser
         }
     }
+
+    for (auto &alien : aliens)
+    {
+        for (auto it = alien.lasers.begin(); it != alien.lasers.end();)
+        {
+            if (!it->active)
+            {
+                it = alien.lasers.erase(it); // Remove inactive laser
+            }
+            else
+            {
+                ++it; // Move to the next laser
+            }
+        }
+    }
 }
 
 std::vector<Obstacle> Game::CreateObstacles()
@@ -127,6 +164,41 @@ std::vector<Alien> Game::CreateAliens(int level_number)
     }
     return aliensVector;
 }
+
+void Game::MoveAliens()
+{
+    for (auto &alien : aliens)
+    {
+        if (alien.position.x + alien.alienImages[alien.type - 1].width > GetScreenWidth() - 110){
+            alienDirection = -1; // Change direction to left
+            MoveDownAliens(4);
+        }
+        if (alien.position.x < 110){
+            alienDirection= 1;
+            MoveDownAliens(4);
+        }
+        alien.Update(alienDirection); // Move aliens to the right by default
+        
+    }
+}
+
+void Game::MoveDownAliens(int distance)
+{
+    for (auto &alien : aliens)
+    {
+        alien.position.y += distance; // Move down by 4 pixels
+    }
+}
+
+void Game::AlienShootLaser()
+{
+    //get a radom number 
+    int randomIndex = GetRandomValue(0, aliens.size() - 1);
+    aliens[randomIndex].ShootLaser(); 
+
+}
+
+
 
 void Game::NextLevel()
 {
