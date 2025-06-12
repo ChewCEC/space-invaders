@@ -76,10 +76,3 @@ void Alien::UnloadImages()
     }
 }
 
-void Alien::ShootLaser()
-{
-    float cord_x = position.x + alienImages[type - 1].width / 2;
-    float cord_y = position.y + alienImages[type - 1].height + 10;
-
-    lasers.push_back(Laser({cord_x, cord_y}, -11.0f));
-}
