@@ -10,7 +10,9 @@ Game::Game()
     
     // Initialize shooting timer
     alienShootTimer = 0.0f;
-    alienShootInterval = 0.335f; // Shoot every 1 second (adjust as needed)
+    alienShootInterval = 0.335f;
+    misteryShipSpawnTimer = 0.0f;
+    misteryShipSpawnInterval = GetRandomValue(10, 20);
 }
 
 Game::~Game() {
@@ -19,6 +21,15 @@ Game::~Game() {
 
 void Game::Update()
 {
+    double currentTime = GetTime();
+    if (currentTime - misteryShipSpawnTimer >= misteryShipSpawnInterval)
+    {
+        misteryShip.Spawn();
+        misteryShipSpawnTimer = currentTime;
+        misteryShipSpawnInterval = GetRandomValue(10, 20);
+    }
+
+
     for (auto &laser : spaceship.lasers)
     {
         laser.Update();
@@ -39,11 +50,13 @@ void Game::Update()
 
     KillLaser();
     MoveAliens();
+    misteryShip.Update();
 }
 
 void Game::Draw()
 {
     spaceship.Draw();
+    misteryShip.Draw();
 
     for (auto &laser : spaceship.lasers)
     {

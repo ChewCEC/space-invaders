@@ -5,11 +5,13 @@
 #include "level.hpp"
 #include "alien.hpp"
 #include "laser.hpp"
+#include "misteryship.hpp"
 
 class Game
 {
     private:
         Spaceship spaceship;
+        MisteryShip misteryShip;
         std::vector<Obstacle> obstacles;
         std::vector<Obstacle> CreateObstacles();
         std::vector<Alien> aliens;
@@ -23,8 +25,10 @@ class Game
         // Add timer variables for alien shooting
         float alienShootTimer;
         float alienShootInterval;
-
         void DebugDraw();
+
+        float misteryShipSpawnTimer;
+        float misteryShipSpawnInterval;
 
     public:
         Game(/* args */);
@@ -35,6 +39,6 @@ class Game
         void KillLaser();
         void NextLevel();
         void AlienShootLaser();
-                        
+
 };
 
