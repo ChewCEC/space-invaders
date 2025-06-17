@@ -7,6 +7,7 @@ public:
     void Update();
     void Draw();
     bool active;
+    Rectangle GetRectangle();
 private:
     Vector2 position;
     float speed;

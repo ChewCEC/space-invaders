@@ -58,3 +58,11 @@ void MisteryShip::Draw()
         DrawTexture(image, position.x, position.y, WHITE);
     }
 }
+
+Rectangle MisteryShip::GetRectangle()
+{
+    if (!IsActive) {
+        return {position.x, position.y, 0, 0}; // Return an empty rectangle if the ship is not active
+    }
+    return {position.x, position.y, float(image.width), float(image.height)};
+}

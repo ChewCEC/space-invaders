@@ -21,3 +21,7 @@ void Laser::Draw() {
     
 }
 
+Rectangle Laser::GetRectangle()
+{
+    return {position.x, position.y, 2, 10};
+}

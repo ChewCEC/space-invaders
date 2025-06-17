@@ -15,6 +15,7 @@ Game::Game()
     misteryShipSpawnInterval = GetRandomValue(10, 20);
 }
 
+
 Game::~Game() {
     Alien::UnloadImages(); // Unload alien images when the game is destroyed
 }
@@ -28,7 +29,6 @@ void Game::Update()
         misteryShipSpawnTimer = currentTime;
         misteryShipSpawnInterval = GetRandomValue(10, 20);
     }
-
 
     for (auto &laser : spaceship.lasers)
     {
@@ -51,6 +51,7 @@ void Game::Update()
     KillLaser();
     MoveAliens();
     misteryShip.Update();
+    CheckCollisions();
 }
 
 void Game::Draw()
@@ -190,6 +191,78 @@ void Game::MoveDownAliens(int distance)
     for (auto &alien : aliens)
     {
         alien.position.y += distance; // Move down by 4 pixels
+    }
+}
+
+void Game::CheckCollisions()
+{
+    for(auto& laser: spaceship.lasers){
+        auto alien_it = aliens.begin();
+        while(alien_it != aliens.end()){
+            if(CheckCollisionRecs(laser.GetRectangle(), alien_it->GetRectangle())){
+                alien_it = aliens.erase(alien_it);
+                laser.active = false; 
+                
+            }
+            else{
+                ++alien_it; 
+            }
+        }
+
+        for(auto& obstacle: obstacles){
+            auto block_it = obstacle.blocks.begin();
+            while(block_it != obstacle.blocks.end()){
+                if(CheckCollisionRecs(laser.GetRectangle(), block_it->GetRectangle())){
+                    block_it = obstacle.blocks.erase(block_it); 
+                    laser.active = false; 
+                }
+                else{
+                    ++block_it;
+                }
+            }
+        }
+
+        if(CheckCollisionRecs(laser.GetRectangle(), misteryShip.GetRectangle())){
+            misteryShip.IsActive = false; 
+            laser.active = false; 
+
+        }
+    }
+
+    for(auto& alienLaser: alienLasers){
+        if(CheckCollisionRecs(alienLaser.GetRectangle(), spaceship.GetRectangle())){
+            // Handle collision with spaceship
+            std::cout << "Alien laser hit the spaceship!" << std::endl;
+            alienLaser.active = false; // Deactivate the alien laser
+        }
+
+        for(auto& obstacle: obstacles){
+            auto block_it = obstacle.blocks.begin();
+            while(block_it != obstacle.blocks.end()){
+                if(CheckCollisionRecs(alienLaser.GetRectangle(), block_it->GetRectangle())){
+                    block_it = obstacle.blocks.erase(block_it); 
+                    alienLaser.active = false; 
+                }
+                else{
+                    ++block_it;
+                }
+            }
+        }
+    }
+
+    // Alien colissions with obstacles
+    for(auto& alien: aliens){
+        for(auto& obstacle: obstacles){
+            auto block_it = obstacle.blocks.begin();
+            while(block_it != obstacle.blocks.end()){
+                if(CheckCollisionRecs(alien.GetRectangle(), block_it->GetRectangle())){
+                    block_it = obstacle.blocks.erase(block_it); // Remove the block                    
+                }
+                else{
+                    ++block_it;
+                }
+            }
+        }
     }
 }
 

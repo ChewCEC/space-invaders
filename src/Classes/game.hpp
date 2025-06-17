@@ -22,6 +22,8 @@ class Game
         int alienDirection; 
         void MoveDownAliens(int distance);
 
+        void CheckCollisions();
+        
         // Add timer variables for alien shooting
         float alienShootTimer;
         float alienShootInterval;
@@ -31,7 +33,7 @@ class Game
         float misteryShipSpawnInterval;
 
     public:
-        Game(/* args */);
+        Game();
         ~Game();
         void Draw();
         void Update();

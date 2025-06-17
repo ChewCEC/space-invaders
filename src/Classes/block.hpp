@@ -12,7 +12,7 @@ class Block {
         void Kill();
         void DestroyPosition();
         std::vector<std::vector<int>> PixelsGrid;
-
+        Rectangle GetRectangle();
         private:
         Vector2 position;
         

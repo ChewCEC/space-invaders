@@ -36,3 +36,7 @@ void Spaceship::ShootLaser(){
     lasers.push_back(Laser({position.x + image.width/2, position.y}, 10.0f));
 
 }
+
+Rectangle Spaceship::GetRectangle(){
+    return {position.x, position.y, float(image.width), float(image.height)};
+}

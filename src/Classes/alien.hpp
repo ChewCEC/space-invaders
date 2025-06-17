@@ -11,6 +11,7 @@ public:
     void Update(int direction);
     int GetType();
     static void UnloadImages();
+    Rectangle GetRectangle();
     
     static Texture2D alienImages[4];
     Vector2 position;

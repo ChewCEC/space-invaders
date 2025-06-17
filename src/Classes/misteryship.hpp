@@ -10,6 +10,7 @@ class MisteryShip {
         void Draw();
         void Spawn();
         bool IsActive;
+        Rectangle GetRectangle();
     private:
         Vector2 position;
         float speed;
