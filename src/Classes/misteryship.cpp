@@ -45,7 +45,6 @@ void MisteryShip::Update()
         if (position.x < -image.width || position.x > GetScreenWidth() + image.width + 10)
         {
             IsActive = false; // Deactivate the ship when it goes off-screen
-            std::cout << "Mistery ship deactivated" << std::endl;
         }
 
     }

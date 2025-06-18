@@ -7,6 +7,7 @@ class Alien {
 public:
     Alien(Vector2 position, int type);
     void Draw();
+    void DrawDebug();
     void ShootLaser();
     void Update(int direction);
     int GetType();

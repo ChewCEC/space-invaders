@@ -4,15 +4,8 @@
 
 Game::Game()
 {
-    obstacles = CreateObstacles();
-    aliens = CreateAliens(currentLevel);
-    alienDirection = 1;
-    
-    // Initialize shooting timer
-    alienShootTimer = 0.0f;
-    alienShootInterval = 0.335f;
-    misteryShipSpawnTimer = 0.0f;
-    misteryShipSpawnInterval = GetRandomValue(10, 20);
+    LoadBestScore();
+    InitGame();
 }
 
 
@@ -22,6 +15,10 @@ Game::~Game() {
 
 void Game::Update()
 {
+    if(!run)
+        GameOver();
+    ;
+
     double currentTime = GetTime();
     if (currentTime - misteryShipSpawnTimer >= misteryShipSpawnInterval)
     {
@@ -48,6 +45,7 @@ void Game::Update()
         alienShootTimer = 0.0f; // Reset timer
     }
 
+    NextLevel();
     KillLaser();
     MoveAliens();
     misteryShip.Update();
@@ -71,7 +69,7 @@ void Game::Draw()
 
     for (auto &alien : aliens)
     {
-        alien.Draw();
+        alien.DrawDebug();
     }
 
     for (auto &alienLaser : alienLasers)
@@ -79,11 +77,33 @@ void Game::Draw()
         alienLaser.Draw();
     }
 
-    DebugDraw();
+    // Draw UI elements
+    DrawUI();
+    
+    // DebugDraw();
+}
+
+void Game::DrawUI()
+{
+    // Display player lives
+    DrawText("LIVES:", 20, 20, 20, WHITE);
+    
+    // Draw small spaceships to represent lives
+    for (int i = 0; i < player_lives; i++) {
+        DrawRectangle(100 + (i * 30), 20, 20, 20, RED);
+    }
+    
+    // Display scores
+    DrawText(TextFormat("SCORE: %d", currentScore), 20, 50, 20, WHITE);
+    DrawText(TextFormat("BEST: %d", bestScore), 20, 80, 20, WHITE);
 }
 
 void Game::HandleInput()
 {
+    if(!run){
+        return;
+    }
+
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
     {
         spaceship.MoveLeft();
@@ -157,12 +177,14 @@ std::vector<Alien> Game::CreateAliens(int level_number)
         {
             for (int column = 0; column < alienGrid[0].size(); ++column)
             {
-                // Calculate position regardless of whether an alien is created
-                float x = 110 + column * 2.0f * 44.0f;
-                float y = 60 + row * 1.1f * 50.0f;
+                if (alienGrid[row][column] != 0){
+                    // Calculate position regardless of whether an alien is created
+                    float x = 110 + column * 2.0f * 44.0f;
+                    float y = 60 + row * 1.1f * 50.0f;
 
-                Alien alien({x, y}, alienGrid[row][column]);
-                aliensVector.push_back(alien);
+                    Alien alien({x, y}, alienGrid[row][column]);
+                    aliensVector.push_back(alien);
+                }
             }
         }
     }
@@ -200,9 +222,11 @@ void Game::CheckCollisions()
         auto alien_it = aliens.begin();
         while(alien_it != aliens.end()){
             if(CheckCollisionRecs(laser.GetRectangle(), alien_it->GetRectangle())){
+                // Add score based on alien type
+                AddScore(&*alien_it);
+                
                 alien_it = aliens.erase(alien_it);
                 laser.active = false; 
-                
             }
             else{
                 ++alien_it; 
@@ -225,15 +249,19 @@ void Game::CheckCollisions()
         if(CheckCollisionRecs(laser.GetRectangle(), misteryShip.GetRectangle())){
             misteryShip.IsActive = false; 
             laser.active = false; 
-
+            // Mystery ship gives random bonus points
+            currentScore += 150;
         }
     }
 
     for(auto& alienLaser: alienLasers){
         if(CheckCollisionRecs(alienLaser.GetRectangle(), spaceship.GetRectangle())){
-            // Handle collision with spaceship
-            std::cout << "Alien laser hit the spaceship!" << std::endl;
-            alienLaser.active = false; // Deactivate the alien laser
+            player_lives--; 
+            alienLaser.active = false; 
+
+            if (player_lives == 0) {
+                GameOver();
+            }
         }
 
         for(auto& obstacle: obstacles){
@@ -269,7 +297,7 @@ void Game::CheckCollisions()
 void Game::AlienShootLaser()
 {
     // Don't shoot if there are no aliens
-    if (aliens.empty())
+    if (aliens.empty() )
         return;
         
     // Get a random alien to shoot
@@ -289,10 +317,26 @@ void Game::AlienShootLaser()
 
 void Game::NextLevel()
 {
-    if (currentLevel < LEVELS.size() - 1)
+    if (currentLevel < LEVELS.size() - 1 && aliens.empty())
     {
+        aliens.clear();
+        obstacles.clear();
+
+        obstacles = CreateObstacles();
+
         currentLevel++;
+        spaceship.Reset(); 
+
+        // Create new aliens for the next level
         aliens = CreateAliens(currentLevel);
+    }
+    else if (currentLevel == LEVELS.size() - 1 && aliens.empty())
+    {
+        run = false;
+        // Display a message indicating the game is completed
+        DrawText("Congratulations! You've completed all levels!", GetScreenWidth() / 2 -
+            MeasureText("Congratulations! You've completed all levels!", 20) / 2,
+            GetScreenHeight() / 2 - 10, 20, RED);
     }
 }
 
@@ -310,4 +354,87 @@ void Game::DebugDraw()
     // Optional: Add labels for clarity
     DrawText("Y=55", 10, 55 - 20, 20, RED);
     DrawText("X=110", 110 + 5, 10, 20, RED);
+}
+
+void Game::InitGame()
+{
+    currentLevel = 0;
+    obstacles = CreateObstacles();
+    aliens = CreateAliens(currentLevel);
+    
+    run = true; 
+    player_lives = 3;
+    currentScore = 0;
+
+    alienDirection = 1;
+    
+    // Initialize shooting timer
+    alienShootTimer = 0.0f;
+    alienShootInterval = 0.335f;
+    misteryShipSpawnTimer = 0.0f;
+    misteryShipSpawnInterval = GetRandomValue(10, 20);
+}
+
+void Game::Restart()
+{
+    spaceship.Reset();
+    aliens.clear();
+    alienLasers.clear();
+    obstacles.clear();
+    misteryShip.IsActive = false;
+    
+}
+
+void Game::GameOver()
+{
+    run = false;
+    
+    // Update best score if current score is higher
+    if (currentScore > bestScore) {
+        bestScore = currentScore;
+        SaveBestScore();
+    }
+    
+    // Display game over message
+    DrawText("Game Over", GetScreenWidth() / 2 - MeasureText("Game Over", 20) / 2, GetScreenHeight() / 2 - 10, 20, RED);
+    DrawText("Press R to Restart", GetScreenWidth() / 2 - MeasureText("Press R to Restart", 20) / 2, GetScreenHeight() / 2 + 20, 20, RED);
+    if (IsKeyPressed(KEY_R))
+    {
+        Restart();
+        InitGame();
+    }
+}
+
+void Game::SaveBestScore()
+{
+    // Save best score to a file
+    FILE* file = fopen("highscore.dat", "wb");
+    if (file) {
+        fwrite(&bestScore, sizeof(int), 1, file);
+        fclose(file);
+    }
+}
+
+void Game::LoadBestScore()
+{
+    // Initialize best score to 0
+    bestScore = 0;
+    
+    // Try to load from file
+    FILE* file = fopen("highscore.dat", "rb");
+    if (file) {
+        fread(&bestScore, sizeof(int), 1, file);
+        fclose(file);
+    }
+}
+    
+void Game::AddScore(Alien* alien_it)
+{
+    switch(alien_it->type) {
+        case 1: currentScore += 100; break;
+        case 2: currentScore += 200; break;
+        case 3: currentScore += 300; break;
+        default: currentScore += 100; break;
+    }
+
 }

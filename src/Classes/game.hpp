@@ -17,20 +17,32 @@ class Game
         std::vector<Alien> aliens;
         std::vector<Alien> CreateAliens(int level);
         std::vector<Laser> alienLasers;
-        int currentLevel = 0;
+
         void MoveAliens();
         int alienDirection; 
         void MoveDownAliens(int distance);
-
         void CheckCollisions();
         
         // Add timer variables for alien shooting
         float alienShootTimer;
         float alienShootInterval;
-        void DebugDraw();
 
         float misteryShipSpawnTimer;
         float misteryShipSpawnInterval;
+
+        int player_lives; 
+        int currentLevel = 0;
+        void GameOver();
+        bool run = true; 
+        void Restart();
+        void InitGame();
+        void DrawUI();
+        void DebugDraw();
+        int currentScore;
+        void AddScore(Alien* alien_it);
+        int bestScore;
+        void SaveBestScore();
+        void LoadBestScore();
 
     public:
         Game();

@@ -10,52 +10,53 @@ Alien::Alien(Vector2 pos, int alienType)
     this->active = true;
     this->speed = 0.1f;
 
-
-    if (alienImages[type - 1].id == 0) // Check if the texture is loaded
-    {       
-        switch (alienType)
-        {
-        case 1:
+    switch (alienType)
+    {
+    case 1:
+        if (alienImages[0].id == 0) 
             alienImages[0] = LoadTexture("Graphics/alien_1.png");
             color = WHITE;
-            break;
-        case 2:
-            alienImages[1]  = LoadTexture("Graphics/alien_2.png");
+        break;
+    case 2:
+        if (alienImages[1].id == 0)
+            alienImages[1] = LoadTexture("Graphics/alien_2.png");
             color = WHITE;
-            break;
-        case 3:
+        break;
+    case 3:
+        if (alienImages[2].id == 0)
             alienImages[2] = LoadTexture("Graphics/alien_3.png");
             color = WHITE;
-            break;
-        default:
+        break;
+    default:
+        if (alienImages[0].id == 0)
             alienImages[0] = LoadTexture("Graphics/alien_1.png");
             color = WHITE;
-            break;
-        }
+            
+        break;
     }
 }
 
+
 void Alien::Draw()
 {
-    // Draw the alien texture
+    DrawTextureV(alienImages[type - 1], position, color);
+}
+
+void Alien::DrawDebug()
+{
     DrawTextureV(alienImages[type - 1], position, color);
 
-    // Draw a red box around the alien for debugging
     Color debugColor = RED;
-    debugColor.a = 128; // Semi-transparent red
+    debugColor.a = 128; 
 
-    // Assuming the alien image is approximately 40x40 pixels
-    // Adjust these values if your alien sprites have different dimensions
     Rectangle bounds = {
         position.x,
         position.y,
         (float)alienImages[type - 1].width,
         (float)alienImages[type - 1].height};
 
-    // Draw the debug box
     DrawRectangleLinesEx(bounds, 2.0f, debugColor);
 
-    // Optionally, display the alien type for additional debugging
     DrawText(TextFormat("%d", type), position.x, position.y - 20, 20, RED);
 }
 
@@ -66,6 +67,8 @@ int Alien::GetType()
 
 void Alien::Update(int direction)
 {
+    if (!active)
+        return;
     position.x += speed * direction;
 }
 
