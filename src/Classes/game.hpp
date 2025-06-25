@@ -9,6 +9,18 @@
 
 class Game
 {
+public:
+        Game();
+        ~Game();
+        void Draw();
+        void Update();
+        void HandleInput();
+        void KillLaser();
+        void NextLevel();
+        void AlienShootLaser();
+        void UpdateMusic();
+        Music backgroundMusic;
+
     private:
         Spaceship spaceship;
         MisteryShip misteryShip;
@@ -44,15 +56,13 @@ class Game
         void SaveBestScore();
         void LoadBestScore();
 
-    public:
-        Game();
-        ~Game();
-        void Draw();
-        void Update();
-        void HandleInput();
-        void KillLaser();
-        void NextLevel();
-        void AlienShootLaser();
-
+        Sound explosionSound;
+        Sound spaceshipShoot;
+        Sound fastinvader_1;
+        Sound fastinvader_2;
+        Sound fastinvader_3;
+        Sound invaderkilled;
+        Sound mysteryShipSoundHigh;
+        Sound mysteryShipSoundLow;
 };
 

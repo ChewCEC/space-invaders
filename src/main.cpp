@@ -10,11 +10,13 @@ int main()
     int windowHeight = 720;
     
     InitWindow(windowWidth, windowHeight, "Space Invaders");
+    InitAudioDevice();
+
     SetTargetFPS(144); //framerate
     Game game;
 
     while(WindowShouldClose() == false){
-        
+        game.UpdateMusic();
         game.HandleInput();
         BeginDrawing();
         ClearBackground(grey);
@@ -25,4 +27,8 @@ int main()
         EndDrawing();
         
     }
+
+    CloseWindow();
+    CloseAudioDevice();
+    return 0;
 }

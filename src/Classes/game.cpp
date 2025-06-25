@@ -4,13 +4,36 @@
 
 Game::Game()
 {
+    backgroundMusic = LoadMusicStream("Sounds/03. Mercury.mp3");
+    explosionSound = LoadSound("Sounds/explosion.wav");
+    spaceshipShoot = LoadSound("Sounds/shoot.wav");
+    fastinvader_1 = LoadSound("Sounds/fastinvader1.wav");
+    fastinvader_2 = LoadSound("Sounds/fastinvader2.wav");
+    fastinvader_3 = LoadSound("Sounds/fastinvader3.wav");
+    invaderkilled = LoadSound("Sounds/invaderkilled.wav");
+    mysteryShipSoundHigh = LoadSound("Sounds/ufo_highpitch.wav");
+    mysteryShipSoundLow = LoadSound("Sounds/ufo_lowpitch.wav");
+
+
+    SetMusicVolume(backgroundMusic, 0.5f);
+    backgroundMusic.looping = true;
+    PlayMusicStream(backgroundMusic);
     LoadBestScore();
     InitGame();
 }
 
 
 Game::~Game() {
-    Alien::UnloadImages(); // Unload alien images when the game is destroyed
+    Alien::UnloadImages(); 
+    UnloadMusicStream(backgroundMusic);
+    UnloadSound(explosionSound);
+    UnloadSound(spaceshipShoot);
+    UnloadSound(fastinvader_1);
+    UnloadSound(fastinvader_2);
+    UnloadSound(fastinvader_3);
+    UnloadSound(invaderkilled);
+    UnloadSound(mysteryShipSoundHigh);
+    UnloadSound(mysteryShipSoundLow);
 }
 
 void Game::Update()
@@ -22,6 +45,12 @@ void Game::Update()
     double currentTime = GetTime();
     if (currentTime - misteryShipSpawnTimer >= misteryShipSpawnInterval)
     {
+        if(GetRandomValue(0, 1) > 0.5f){
+            PlaySound(mysteryShipSoundHigh);
+        }else{
+            PlaySound(mysteryShipSoundLow);
+        }
+
         misteryShip.Spawn();
         misteryShipSpawnTimer = currentTime;
         misteryShipSpawnInterval = GetRandomValue(10, 20);
@@ -108,7 +137,8 @@ void Game::HandleInput()
     {
         spaceship.MoveLeft();
         if (IsKeyPressed(KEY_SPACE))
-        {
+        {   
+            PlaySound(spaceshipShoot);
             spaceship.ShootLaser();
         }
     }
@@ -117,11 +147,13 @@ void Game::HandleInput()
         spaceship.MoveRight();
         if (IsKeyPressed(KEY_SPACE))
         {
+            PlaySound(spaceshipShoot);
             spaceship.ShootLaser();
         }
     }
     else if (IsKeyPressed(KEY_SPACE))
     {
+        PlaySound(spaceshipShoot);
         spaceship.ShootLaser();
     }
 }
@@ -224,7 +256,7 @@ void Game::CheckCollisions()
             if(CheckCollisionRecs(laser.GetRectangle(), alien_it->GetRectangle())){
                 // Add score based on alien type
                 AddScore(&*alien_it);
-                
+                PlaySound(invaderkilled);
                 alien_it = aliens.erase(alien_it);
                 laser.active = false; 
             }
@@ -248,9 +280,9 @@ void Game::CheckCollisions()
 
         if(CheckCollisionRecs(laser.GetRectangle(), misteryShip.GetRectangle())){
             misteryShip.IsActive = false; 
-            laser.active = false; 
-            // Mystery ship gives random bonus points
-            currentScore += 150;
+            laser.active = false;
+            PlaySound(invaderkilled);            
+            currentScore += 400;
         }
     }
 
@@ -343,7 +375,6 @@ void Game::NextLevel()
 void Game::DebugDraw()
 {
     // Draw debug lines with specified offsets
-
     // Horizontal line with Y offset of 55
     DrawLine(0, 55, GetScreenWidth(), 55, RED);
 
@@ -437,4 +468,9 @@ void Game::AddScore(Alien* alien_it)
         default: currentScore += 100; break;
     }
 
+}
+
+void Game::UpdateMusic()
+{
+    UpdateMusicStream(backgroundMusic);
 }
