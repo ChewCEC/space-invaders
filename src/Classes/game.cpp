@@ -98,7 +98,7 @@ void Game::Draw()
 
     for (auto &alien : aliens)
     {
-        alien.DrawDebug();
+        alien.Draw();
     }
 
     for (auto &alienLaser : alienLasers)
@@ -308,6 +308,9 @@ void Game::CheckCollisions()
                 }
             }
         }
+
+        
+
     }
 
     // Alien colissions with obstacles
